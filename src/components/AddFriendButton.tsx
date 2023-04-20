@@ -1,18 +1,39 @@
 "use client";
 
-import { FC } from "react";
+import { FC, useState } from "react";
 import Button from "./ui/Button";
+import { addFriendValidator } from "@/lib/validations/add-friend";
+import axios, { AxiosError } from "axios";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 interface AddFriendButtonProps {}
 
 const AddFriendButton: FC<AddFriendButtonProps> = ({}) => {
+  const [showSuccessState, setShowSuccessState] = useState<boolean>(false);
+
+  const {} = useForm({
+    resolver: zodResolver(addFriendValidator),
+  });
+
   const addFriend = async (email: string) => {
     try {
-      const validatedEmail = 
+      const validatedEmail = addFriendValidator.parse({ email });
+      await axios.post("/api/friends/add", {
+        email: validatedEmail,
+      });
+      setShowSuccessState(true);
     } catch (error) {
-      
+      if (error instanceof z.ZodError) {
+        return;
+      }
+
+      if (error instanceof AxiosError) {
+        return;
+      }
     }
-  }
+  };
 
   return (
     <form className="max-w-sm">
