@@ -5,7 +5,7 @@ import Messages from "@/components/Messages";
 import { fetchRedis } from "@/helpers/redis";
 import { getServerSession } from "next-auth";
 import ChatInput from "@/components/ChatInput";
-import { messageArrayValidator } from "@/lib/validations/message";
+import { Message, messageArrayValidator } from "@/lib/validations/message";
 
 export async function generateMetadata({
   params,
@@ -79,7 +79,7 @@ const page = async ({ params }: PageProps) => {
 
   return (
     <div className="flex-1 justify-between flex flex-col h-full max-h-[calc(100vh-6rem)]">
-      <div className="flex sm:items-center justify-between py-3 border-b-2 border-gray-200">
+      <div className="flex sm:items-center justify-between px-4 py-3 border-b-2 border-gray-200">
         <div className="relative flex items-center space-x-4">
           <div className="relative">
             <div className="relative w-8 sm:w-12 h-8 sm:h-12">
@@ -88,6 +88,7 @@ const page = async ({ params }: PageProps) => {
                 referrerPolicy="no-referrer"
                 src={chatPartner.image}
                 alt={`${chatPartner.name} profile picture`}
+                priority={true}
                 className="rounded-full"
               />
             </div>
