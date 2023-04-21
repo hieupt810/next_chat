@@ -15,7 +15,7 @@ export async function POST(req: Request) {
     const session = await getServerSession(authOptions);
 
     if (!session) {
-      return new Response("Unauthorized", { status: 401 });
+      return new Response("Chưa xác minh", { status: 401 });
     }
 
     // verify both users are not already friends
@@ -26,7 +26,7 @@ export async function POST(req: Request) {
     );
 
     if (isAlreadyFriends) {
-      return new Response("Already friends", { status: 400 });
+      return new Response("Đã là bạn bè", { status: 400 });
     }
 
     const hasFriendRequest = await fetchRedis(
@@ -46,8 +46,6 @@ export async function POST(req: Request) {
 
     const user = JSON.parse(userRaw) as User;
     const friend = JSON.parse(friendRaw) as User;
-
-    // notify added user
 
     await Promise.all([
       pusherServer.trigger(

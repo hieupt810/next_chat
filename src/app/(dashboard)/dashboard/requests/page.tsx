@@ -8,7 +8,6 @@ const page = async () => {
   const session = await getServerSession(authOptions);
   if (!session) notFound();
 
-  // ids of people who sent current logged in user a friend requests
   const incomingSenderIds = (await fetchRedis(
     "smembers",
     `user:${session.user.id}:incoming_friend_requests`

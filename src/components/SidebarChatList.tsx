@@ -4,6 +4,7 @@ import { toast } from "react-hot-toast";
 import { pusherClient } from "@/lib/pusher";
 import { FC, useEffect, useState } from "react";
 import UnseenChatToast from "./UnseenChatToast";
+import { Message } from "@/lib/validations/message";
 import { usePathname, useRouter } from "next/navigation";
 import { chatHrefConstructor, toPusherKey } from "@/lib/utils";
 
@@ -28,7 +29,6 @@ const SidebarChatList: FC<SidebarChatListProps> = ({ friends, sessionId }) => {
     pusherClient.subscribe(toPusherKey(`user:${sessionId}:friends`));
 
     const newFriendHandler = (newFriend: User) => {
-      console.log("received new user", newFriend);
       setActiveChats((prev) => [...prev, newFriend]);
     };
 

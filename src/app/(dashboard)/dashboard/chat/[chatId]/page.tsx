@@ -24,7 +24,7 @@ export async function generateMetadata({
   )) as string;
   const chatPartner = JSON.parse(chatPartnerRaw) as User;
 
-  return { title: `FriendZone | ${chatPartner.name} chat` };
+  return { title: `Bạn bè | Trò chuyện với ${chatPartner.name}` };
 }
 
 interface PageProps {
@@ -68,7 +68,6 @@ const page = async ({ params }: PageProps) => {
   }
 
   const chatPartnerId = user.id === userId1 ? userId2 : userId1;
-  // new
 
   const chatPartnerRaw = (await fetchRedis(
     "get",

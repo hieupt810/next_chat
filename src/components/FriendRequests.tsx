@@ -25,13 +25,11 @@ const FriendRequests: FC<FriendRequestsProps> = ({
     pusherClient.subscribe(
       toPusherKey(`user:${sessionId}:incoming_friend_requests`)
     );
-    console.log("listening to ", `user:${sessionId}:incoming_friend_requests`);
 
     const friendRequestHandler = ({
       senderId,
       senderEmail,
     }: IncomingFriendRequest) => {
-      console.log("function got called");
       setFriendRequests((prev) => [...prev, { senderId, senderEmail }]);
     };
 
@@ -68,7 +66,7 @@ const FriendRequests: FC<FriendRequestsProps> = ({
   return (
     <>
       {friendRequests.length === 0 ? (
-        <p className="text-sm text-zinc-500">Nothing to show here...</p>
+        <p className="text-sm text-zinc-500">Không có lời mời kết bạn...</p>
       ) : (
         friendRequests.map((request) => (
           <div key={request.senderId} className="flex gap-4 items-center">

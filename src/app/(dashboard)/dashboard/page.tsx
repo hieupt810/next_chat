@@ -6,6 +6,7 @@ import { ChevronRight } from "lucide-react";
 import { fetchRedis } from "@/helpers/redis";
 import { getServerSession } from "next-auth";
 import { chatHrefConstructor } from "@/lib/utils";
+import { Message } from "@/lib/validations/message";
 import { getFriendsByUserId } from "@/helpers/get-friends-by-user-id";
 
 const page = async ({}) => {
@@ -34,9 +35,11 @@ const page = async ({}) => {
 
   return (
     <div className="container py-12">
-      <h1 className="font-bold text-5xl mb-8">Recent chats</h1>
+      <h1 className="font-bold text-5xl mb-8">Trò chuyện gần đây</h1>
       {friendsWithLastMessage.length === 0 ? (
-        <p className="text-sm text-zinc-500">Nothing to show here...</p>
+        <p className="text-sm text-zinc-500">
+          Không có đoạn hội thoại gần đây...
+        </p>
       ) : (
         friendsWithLastMessage.map((friend) => (
           <div

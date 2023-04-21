@@ -25,7 +25,7 @@ export const metadata = {
 const sidebarOptions: SidebarOption[] = [
   {
     id: 1,
-    name: "Add friend",
+    name: "Thêm bạn bè",
     href: "/dashboard/add",
     Icon: "UserPlus",
   },
@@ -36,8 +36,6 @@ const Layout = async ({ children }: LayoutProps) => {
   if (!session) notFound();
 
   const friends = await getFriendsByUserId(session.user.id);
-  console.log("friends", friends);
-
   const unseenRequestCount = (
     (await fetchRedis(
       "smembers",
@@ -63,7 +61,7 @@ const Layout = async ({ children }: LayoutProps) => {
 
         {friends.length > 0 ? (
           <div className="text-xs font-semibold leading-6 text-gray-400">
-            Your chats
+            Trò chuyện
           </div>
         ) : null}
 
@@ -74,7 +72,7 @@ const Layout = async ({ children }: LayoutProps) => {
             </li>
             <li>
               <div className="text-xs font-semibold leading-6 text-gray-400">
-                Overview
+                Tổng quan
               </div>
 
               <ul role="list" className="-mx-2 mt-2 space-y-1">
@@ -117,7 +115,7 @@ const Layout = async ({ children }: LayoutProps) => {
                   />
                 </div>
 
-                <span className="sr-only">Your profile</span>
+                <span className="sr-only">Trang cá nhân</span>
                 <div className="flex flex-col">
                   <span aria-hidden="true">{session.user.name}</span>
                   <span className="text-xs text-zinc-400" aria-hidden="true">
