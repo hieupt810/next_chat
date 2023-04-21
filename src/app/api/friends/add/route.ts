@@ -1,9 +1,11 @@
+import { z } from "zod";
 import { db } from "@/lib/db";
 import { authOptions } from "@/lib/auth";
+import { toPusherKey } from "@/lib/utils";
+import { pusherServer } from "@/lib/pusher";
+import { fetchRedis } from "@/helpers/redis";
 import { getServerSession } from "next-auth";
 import { addFriendValidator } from "@/lib/validations/add-friend";
-import { fetchRedis } from "@/helper/redis";
-import { z } from "zod";
 
 export async function POST(req: Request) {
   try {
@@ -15,47 +17,59 @@ export async function POST(req: Request) {
       "get",
       `user:email:${emailToAdd}`
     )) as string;
+
     if (!idToAdd) {
-      return new Response("Người này hiện không tồn tại", { status: 400 });
+      return new Response("This person does not exist.", { status: 400 });
     }
 
     const session = await getServerSession(authOptions);
+
     if (!session) {
       return new Response("Unauthorized", { status: 401 });
     }
+
     if (idToAdd === session.user.id) {
-      return new Response("Không thể thêm bản thân vào danh sách bạn bè!", {
+      return new Response("You cannot add yourself as a friend", {
         status: 400,
       });
     }
 
-    // Check if User is already added
-    const alreadyAdded = await fetchRedis(
+    // check if user is already added
+    const isAlreadyAdded = (await fetchRedis(
       "sismember",
       `user:${idToAdd}:incoming_friend_requests`,
       session.user.id
-    );
-    if (alreadyAdded) {
-      return new Response("Bạn đã gửi lời mời kết bạn trước đây rồi!", {
-        status: 400,
-      });
+    )) as 0 | 1;
+
+    if (isAlreadyAdded) {
+      return new Response("Already added this user", { status: 400 });
     }
 
-    // Check if User is already friend
-    const alreadyFriend = (await fetchRedis(
+    // check if user is already added
+    const isAlreadyFriends = (await fetchRedis(
       "sismember",
       `user:${session.user.id}:friends`,
       idToAdd
     )) as 0 | 1;
-    if (alreadyFriend) {
-      return new Response("Hai bạn đã là bạn bè của nhau!", {
-        status: 400,
-      });
+
+    if (isAlreadyFriends) {
+      return new Response("Already friends with this user", { status: 400 });
     }
 
-    // Valid request, send friend request
-    db.sadd(`user:${idToAdd}:incoming_friend_requests`, session.user.id);
-    return new Response("Đã gửi lời mời kết bạn.");
+    // valid request, send friend request
+
+    await pusherServer.trigger(
+      toPusherKey(`user:${idToAdd}:incoming_friend_requests`),
+      "incoming_friend_requests",
+      {
+        senderId: session.user.id,
+        senderEmail: session.user.email,
+      }
+    );
+
+    await db.sadd(`user:${idToAdd}:incoming_friend_requests`, session.user.id);
+
+    return new Response("OK");
   } catch (error) {
     if (error instanceof z.ZodError) {
       return new Response("Invalid request payload", { status: 422 });
